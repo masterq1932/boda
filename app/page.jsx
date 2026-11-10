@@ -11,7 +11,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchMedia();
-    const interval = setInterval(fetchMedia, 5000); // Polling cada 5 segundos para actualizar fotos
+    const interval = setInterval(fetchMedia, 5000); // Polling cada 5 segundos
     return () => clearInterval(interval);
   }, []);
 
@@ -71,25 +71,6 @@ export default function Home() {
     if (successCount > 0) {
       fetchMedia();
       alert(`¡${successCount} archivo(s) subido(s) con éxito!`);
-    }
-  };
-
-  // Función para forzar la descarga de 1 en 1 en el almacenamiento del celular / PC
-  const handleDownload = async (fileUrl, fileName) => {
-    try {
-      const response = await fetch(fileUrl);
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = fileName || `recuerdo-boda-${Date.now()}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      window.open(fileUrl, '_blank');
     }
   };
 
@@ -187,12 +168,13 @@ export default function Home() {
               <img src={selectedItem.url} alt="Vista previa" className="max-h-[80vh] w-auto object-contain rounded-lg shadow-2xl" />
             )}
 
-            <button
-              onClick={() => handleDownload(selectedItem.url, selectedItem.id)}
+            <a
+              href={`/api/download?key=${encodeURIComponent(selectedItem.id)}`}
+              download
               className="mt-4 bg-white text-stone-900 font-medium px-6 py-2 rounded-full shadow hover:bg-stone-100 transition flex items-center gap-2"
             >
               ⬇️ Descargar archivo
-            </button>
+            </a>
           </div>
         </div>
       )}
