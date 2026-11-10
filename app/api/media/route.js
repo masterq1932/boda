@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const s3Client = new S3Client({
   region: 'auto',
@@ -19,17 +20,27 @@ export async function GET() {
     const response = await s3Client.send(command);
     const contents = response.Contents || [];
 
-    const mediaList = contents
-      .map((item, index) => {
+    const mediaList = await Promise.all(
+      contents.map(async (item, index) => {
         const isVideo = item.Key.match(/\.(mp4|mov|webm|avi|mkv)$/i) || item.Key.includes('video');
+        
+        // Generar enlace firmado de lectura directo desde Cloudflare R2
+        const getCommand = new GetObjectCommand({
+          Bucket: process.env.R2_BUCKET_NAME,
+          Key: item.Key,
+        });
+        const signedUrl = await getSignedUrl(s3Client, getCommand, { expiresIn: 86400 });
+
         return {
           id: item.Key || index,
-          url: `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${item.Key}`,
+          url: signedUrl,
           type: isVideo ? 'video' : 'image',
           lastModified: item.LastModified,
         };
       })
-      .sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
+    );
+
+    mediaList.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
 
     return NextResponse.json(mediaList);
   } catch (error) {
