@@ -19,14 +19,17 @@ export async function GET() {
     const response = await s3Client.send(command);
     const contents = response.Contents || [];
 
-    const mediaList = contents.map((item, index) => {
-      const isVideo = item.Key.match(/\.(mp4|mov|webm|avi|mkv)$/i) || item.Key.includes('video');
-      return {
-        id: item.Key || index,
-        url: `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${item.Key}`,
-        type: isVideo ? 'video' : 'image',
-      };
-    }).reverse();
+    const mediaList = contents
+      .map((item, index) => {
+        const isVideo = item.Key.match(/\.(mp4|mov|webm|avi|mkv)$/i) || item.Key.includes('video');
+        return {
+          id: item.Key || index,
+          url: `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${item.Key}`,
+          type: isVideo ? 'video' : 'image',
+          lastModified: item.LastModified,
+        };
+      })
+      .sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
 
     return NextResponse.json(mediaList);
   } catch (error) {
