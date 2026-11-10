@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { getDb } from '@/utils/db';
 
 const s3Client = new S3Client({
   region: 'auto',
@@ -17,7 +16,7 @@ export async function POST(request) {
     const { filename, fileType } = await request.json();
 
     if (!filename || !fileType) {
-      return NextResponse.json({ error: 'Faltan parámetros (filename, fileType)' }, { status: 400 });
+      return NextResponse.json({ error: 'Faltan parámetros' }, { status: 400 });
     }
 
     const uniqueKey = `boda-${Date.now()}-${filename.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
@@ -30,13 +29,6 @@ export async function POST(request) {
 
     const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
     const publicUrl = `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${uniqueKey}`;
-    const fileCategory = fileType.startsWith('video') ? 'video' : 'image';
-
-    const db = await getDb();
-    await db.run(
-      'INSERT INTO media (url, type) VALUES (?, ?)',
-      [publicUrl, fileCategory]
-    );
 
     return NextResponse.json({ uploadUrl, publicUrl, key: uniqueKey });
   } catch (error) {
