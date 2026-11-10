@@ -36,3 +36,7 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Error al generar URL de subida' }, { status: 500 });
   }
 }
+    console.error('Error generando URL de subida:', error);
+    return NextResponse.json({ error: 'Error al generar URL de subida' }, { status: 500 });
+  }
+}
