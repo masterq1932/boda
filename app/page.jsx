@@ -75,107 +75,109 @@ export default function Home() {
   };
 
   return (
-  <main className="min-h-screen bg-[#faf4f5] text-rose-950 pb-20">
-  {/* Encabezado Rosado Palo */}
-  <header className="bg-[#b87c88] text-white py-10 px-4 text-center shadow-md">
-    <h1 className="font-serif text-3xl md:text-4xl tracking-wide mb-2">Recuerdos de la Boda</h1>
-    <p className="text-rose-100 text-sm md:text-base font-light">Comparte tus fotos y videos favoritos de la celebración</p>
-  </header>
+    <main className="min-h-screen bg-[#faf4f5] text-rose-950 pb-20">
+      {/* Encabezado Rosado Palo */}
+      <header className="bg-[#b87c88] text-white py-10 px-4 text-center shadow-md">
+        <h1 className="font-serif text-3xl md:text-4xl tracking-wide mb-2">Recuerdos de la Boda</h1>
+        <p className="text-rose-100 text-sm md:text-base font-light">Comparte tus fotos y videos favoritos de la celebración</p>
+      </header>
 
-  {/* Selector de Archivos */}
-  <div className="max-w-2xl mx-auto px-4 mt-8">
-    <div className="bg-white border border-rose-200/80 rounded-2xl p-6 shadow-sm text-center">
-      <label className="block w-full cursor-pointer bg-[#b87c88] hover:bg-[#a46874] text-white font-medium py-4 px-6 rounded-xl transition duration-200 shadow hover:shadow-md">
-        <span>📷 Subir Fotos y Videos 🎥</span>
-        <input
-          type="file"
-          accept="image/*,video/*"
-          multiple
-          onChange={handleFileUpload}
-          disabled={uploading}
-          className="hidden"
-        />
-      </label>
-      <p className="text-xs text-rose-400 mt-3">Puedes seleccionar múltiples archivos a la vez.</p>
+      {/* Selector de Archivos */}
+      <div className="max-w-2xl mx-auto px-4 mt-8">
+        <div className="bg-white border border-rose-200/80 rounded-2xl p-6 shadow-sm text-center">
+          <label className="block w-full cursor-pointer bg-[#b87c88] hover:bg-[#a46874] text-white font-medium py-4 px-6 rounded-xl transition duration-200 shadow hover:shadow-md">
+            <span>📷 Subir Fotos y Videos 🎥</span>
+            <input
+              type="file"
+              accept="image/*,video/*"
+              multiple
+              onChange={handleFileUpload}
+              disabled={uploading}
+              className="hidden"
+            />
+          </label>
+          <p className="text-xs text-rose-400 mt-3">Puedes seleccionar múltiples archivos a la vez.</p>
 
-      {uploading && (
-        <div className="mt-4 p-3 bg-rose-50 rounded-lg text-sm text-rose-800 animate-pulse border border-rose-100">
-          {progressText}
+          {uploading && (
+            <div className="mt-4 p-3 bg-rose-50 rounded-lg text-sm text-rose-800 animate-pulse border border-rose-100">
+              {progressText}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Galería del Evento */}
+      <div className="max-w-6xl mx-auto px-4 mt-10">
+        <h2 className="font-serif text-2xl text-rose-900 mb-6 border-b border-rose-200 pb-2">Galería del Evento</h2>
+
+        {loadingMedia ? (
+          <div className="text-center py-12 text-rose-400">Cargando recuerdos...</div>
+        ) : mediaList.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-xl border border-dashed border-rose-300 text-rose-400">
+            Aún no hay fotos ni videos. ¡Sé el primero en subir un recuerdo!
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+            {mediaList.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => setSelectedItem(item)}
+                className="relative group aspect-square bg-rose-100/60 rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition"
+              >
+                {item.type === 'video' ? (
+                  <div className="w-full h-full relative bg-black flex items-center justify-center">
+                    <video
+                      src={`${item.url}#t=0.001`}
+                      className="w-full h-full object-cover opacity-90"
+                      muted
+                      preload="metadata"
+                      playsInline
+                    />
+                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/10 transition">
+                      <span className="bg-white/80 rounded-full p-3 text-rose-900 shadow">▶</span>
+                    </div>
+                  </div>
+                ) : (
+                  <img
+                    src={item.url}
+                    alt="Foto de la boda"
+                    className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                    loading="lazy"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Modal de Previsualización y Descarga 1 a 1 */}
+      {selectedItem && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <div className="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center">
+            <button
+              onClick={() => setSelectedItem(null)}
+              className="absolute -top-10 right-0 text-white text-xl font-bold px-3 py-1 bg-white/20 rounded-full hover:bg-white/40 transition"
+            >
+              ✕ Cerrar
+            </button>
+
+            {selectedItem.type === 'video' ? (
+              <video src={selectedItem.url} controls autoPlay className="max-h-[80vh] w-auto rounded-lg shadow-2xl" />
+            ) : (
+              <img src={selectedItem.url} alt="Vista previa" className="max-h-[80vh] w-auto object-contain rounded-lg shadow-2xl" />
+            )}
+
+            <a
+              href={`/api/download?key=${encodeURIComponent(selectedItem.id)}`}
+              download
+              className="mt-4 bg-[#b87c88] hover:bg-[#a46874] text-white font-medium px-6 py-2 rounded-full shadow transition flex items-center gap-2"
+            >
+               Descargar archivo
+            </a>
+          </div>
         </div>
       )}
-    </div>
-  </div>
-
-  {/* Galería del Evento */}
-  <div className="max-w-6xl mx-auto px-4 mt-10">
-    <h2 className="font-serif text-2xl text-rose-900 mb-6 border-b border-rose-200 pb-2">Galería del Evento</h2>
-
-    {loadingMedia ? (
-      <div className="text-center py-12 text-rose-400">Cargando recuerdos...</div>
-    ) : mediaList.length === 0 ? (
-      <div className="text-center py-12 bg-white rounded-xl border border-dashed border-rose-300 text-rose-400">
-        Aún no hay fotos ni videos. ¡Sé el primero en subir un recuerdo!
-      </div>
-    ) : (
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
-        {mediaList.map((item) => (
-          <div
-            key={item.id}
-            onClick={() => setSelectedItem(item)}
-            className="relative group aspect-square bg-rose-100/60 rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition"
-          >
-            {item.type === 'video' ? (
-              <div className="w-full h-full relative bg-black flex items-center justify-center">
-                <video
-                  src={`${item.url}#t=0.001`}
-                  className="w-full h-full object-cover opacity-90"
-                  muted
-                  preload="metadata"
-                  playsInline
-                />
-                <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/10 transition">
-                  <span className="bg-white/80 rounded-full p-3 text-rose-900 shadow">▶</span>
-                </div>
-              </div>
-            ) : (
-              <img
-                src={item.url}
-                alt="Foto de la boda"
-                className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                loading="lazy"
-              />
-            )}
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-
-  {/* Modal de Previsualización y Descarga */}
-  {selectedItem && (
-    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-      <div className="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center">
-        <button
-          onClick={() => setSelectedItem(null)}
-          className="absolute -top-10 right-0 text-white text-xl font-bold px-3 py-1 bg-white/20 rounded-full hover:bg-white/40 transition"
-        >
-          ✕ Cerrar
-        </button>
-
-        {selectedItem.type === 'video' ? (
-          <video src={selectedItem.url} controls autoPlay className="max-h-[80vh] w-auto rounded-lg shadow-2xl" />
-        ) : (
-          <img src={selectedItem.url} alt="Vista previa" className="max-h-[80vh] w-auto object-contain rounded-lg shadow-2xl" />
-        )}
-
-        <a
-          href={`/api/download?key=${encodeURIComponent(selectedItem.id)}`}
-          download
-          className="mt-4 bg-[#b87c88] hover:bg-[#a46874] text-white font-medium px-6 py-2 rounded-full shadow transition flex items-center gap-2"
-        >
-           Descargar archivo
-        </a>
-      </div>
-    </div>
-  )}
-</main>
+    </main>
+  );
+}
