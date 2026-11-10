@@ -78,8 +78,8 @@ export default function Home() {
     <main className="min-h-screen bg-stone-50 text-stone-800 pb-20">
       {/* Encabezado */}
       <header className="bg-stone-900 text-stone-100 py-10 px-4 text-center shadow-md">
-        <h1 className="font-serif text-3xl md:text-4xl tracking-wide mb-2">Recuerdos de la Boda</h1>
-        <p className="text-stone-400 text-sm md:text-base font-light">Comparte tus fotos y videos favoritos de la celebración</p>
+        <h1 className="font-serif text-3xl md:text-4xl tracking-wide mb-2">Recuerdos de nuestra Boda</h1>
+        <p className="text-stone-400 text-sm md:text-base font-light">Comparte tus fotos y videos favoritos</p>
       </header>
 
       {/* Selector de Archivos */}
