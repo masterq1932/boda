@@ -75,7 +75,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-stone-50 text-stone-800 pb-20">
+    <main className="min-h-screen bg-[#faf4f5] text-rose-950 pb-20">
       {/* Encabezado */}
       <header className="bg-stone-900 text-stone-100 py-10 px-4 text-center shadow-md">
         <h1 className="font-serif text-3xl md:text-4xl tracking-wide mb-2">Recuerdos de nuestra Boda</h1>
