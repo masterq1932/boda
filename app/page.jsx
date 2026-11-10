@@ -173,7 +173,7 @@ export default function Home() {
               download
               className="mt-4 bg-white text-stone-900 font-medium px-6 py-2 rounded-full shadow hover:bg-stone-100 transition flex items-center gap-2"
             >
-              ⬇️ Descargar archivo
+               Descargar archivo
             </a>
           </div>
         </div>
