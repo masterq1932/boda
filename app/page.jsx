@@ -108,7 +108,7 @@ export default function Home() {
 
       {/* Galería del Evento */}
       <div className="max-w-6xl mx-auto px-4 mt-10">
-        <h2 className="font-serif text-2xl text-stone-700 mb-6 border-b border-stone-200 pb-2">Galería del Evento</h2>
+        <h2 className="font-serif text-2xl text-stone-700 mb-6 border-b border-stone-200 pb-2">Galería de Antonieta y Javier</h2>
 
         {loadingMedia ? (
           <div className="text-center py-12 text-stone-400">Cargando recuerdos...</div>
