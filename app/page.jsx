@@ -74,13 +74,34 @@ export default function Home() {
     }
   };
 
+  // Función para forzar la descarga de 1 en 1 en el almacenamiento del celular / PC
+  const handleDownload = async (fileUrl, fileName) => {
+    try {
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fileName || `recuerdo-boda-${Date.now()}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      window.open(fileUrl, '_blank');
+    }
+  };
+
   return (
     <main className="min-h-screen bg-stone-50 text-stone-800 pb-20">
+      {/* Encabezado */}
       <header className="bg-stone-900 text-stone-100 py-10 px-4 text-center shadow-md">
         <h1 className="font-serif text-3xl md:text-4xl tracking-wide mb-2">Recuerdos de la Boda</h1>
         <p className="text-stone-400 text-sm md:text-base font-light">Comparte tus fotos y videos favoritos de la celebración</p>
       </header>
 
+      {/* Selector de Archivos */}
       <div className="max-w-2xl mx-auto px-4 mt-8">
         <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm text-center">
           <label className="block w-full cursor-pointer bg-stone-900 hover:bg-stone-800 text-white font-medium py-4 px-6 rounded-xl transition duration-200 shadow hover:shadow-md">
@@ -104,6 +125,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Galería del Evento */}
       <div className="max-w-6xl mx-auto px-4 mt-10">
         <h2 className="font-serif text-2xl text-stone-700 mb-6 border-b border-stone-200 pb-2">Galería del Evento</h2>
 
@@ -123,7 +145,13 @@ export default function Home() {
               >
                 {item.type === 'video' ? (
                   <div className="w-full h-full relative bg-black flex items-center justify-center">
-                    <video src={item.url} className="w-full h-full object-cover opacity-90" muted />
+                    <video
+                      src={`${item.url}#t=0.001`}
+                      className="w-full h-full object-cover opacity-90"
+                      muted
+                      preload="metadata"
+                      playsInline
+                    />
                     <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/10 transition">
                       <span className="bg-white/80 rounded-full p-3 text-stone-900 shadow">▶</span>
                     </div>
@@ -142,6 +170,7 @@ export default function Home() {
         )}
       </div>
 
+      {/* Modal de Previsualización y Descarga 1 a 1 */}
       {selectedItem && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
           <div className="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center">
@@ -158,15 +187,12 @@ export default function Home() {
               <img src={selectedItem.url} alt="Vista previa" className="max-h-[80vh] w-auto object-contain rounded-lg shadow-2xl" />
             )}
 
-            <a
-              href={selectedItem.url}
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 bg-white text-stone-900 font-medium px-6 py-2 rounded-full shadow hover:bg-stone-100 transition"
+            <button
+              onClick={() => handleDownload(selectedItem.url, selectedItem.id)}
+              className="mt-4 bg-white text-stone-900 font-medium px-6 py-2 rounded-full shadow hover:bg-stone-100 transition flex items-center gap-2"
             >
-              Descargar archivo original
-            </a>
+              ⬇️ Descargar archivo
+            </button>
           </div>
         </div>
       )}
