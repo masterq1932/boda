@@ -9,7 +9,7 @@ export default function Home() {
   const [loadingMedia, setLoadingMedia] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [filter, setFilter] = useState('all');
-  const [comment, setComment] = useState(''); // Estado para el comentario
+  const [comment, setComment] = useState('');
 
   useEffect(() => {
     fetchMedia();
@@ -26,7 +26,7 @@ export default function Home() {
       }
     } catch (err) {
       console.error('Error cargando medios:', err);
-    } fontally {
+    } finally {
       setLoadingMedia(false);
     }
   };
@@ -49,7 +49,7 @@ export default function Home() {
           body: JSON.stringify({ 
             filename: file.name, 
             fileType: file.type,
-            comment: comment.trim() // Enviar comentario opcional
+            comment: comment.trim()
           }),
         });
 
@@ -117,7 +117,6 @@ export default function Home() {
       {/* Zona de Subida con Campo de Comentario */}
       <div className="max-w-2xl mx-auto px-4 mt-8">
         <div className="bg-white border border-rose-200/80 rounded-2xl p-6 shadow-sm text-center">
-          
           <input
             type="text"
             placeholder="✍️ Escribe un mensaje o felicitación (opcional)..."
@@ -236,7 +235,7 @@ export default function Home() {
         )}
       </div>
 
-      {/* Modal con Comentario */}
+      {/* Modal interactivo con navegación entre elementos */}
       {selectedItem && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
           <button
