@@ -24,7 +24,17 @@ export async function GET() {
       contents.map(async (item, index) => {
         const isVideo = item.Key.match(/\.(mp4|mov|webm|avi|mkv)$/i) || item.Key.includes('video');
         
-        // Generar enlace firmado de lectura directo desde Cloudflare R2
+        // Extraer comentario de la clave del archivo
+        const parts = item.Key.split('-');
+        let comment = '';
+        if (parts.length >= 3 && parts[2] !== 'nocomment') {
+          try {
+            comment = Buffer.from(parts[2], 'base64url').toString('utf-8');
+          } catch (e) {
+            comment = '';
+          }
+        }
+
         const getCommand = new GetObjectCommand({
           Bucket: process.env.R2_BUCKET_NAME,
           Key: item.Key,
@@ -35,6 +45,7 @@ export async function GET() {
           id: item.Key || index,
           url: signedUrl,
           type: isVideo ? 'video' : 'image',
+          comment: comment,
           lastModified: item.LastModified,
         };
       })
