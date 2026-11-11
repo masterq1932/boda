@@ -119,7 +119,7 @@ export default function Home() {
         <div className="bg-white border border-rose-200/80 rounded-2xl p-6 shadow-sm text-center">
           <input
             type="text"
-            placeholder="✍️ Escribe un mensaje o felicitación (opcional)..."
+            placeholder=" Escribe un mensaje o felicitación (opcional)..."
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             disabled={uploading}
@@ -127,7 +127,7 @@ export default function Home() {
           />
 
           <label className="block w-full cursor-pointer bg-[#b87c88] hover:bg-[#a46874] text-white font-medium py-4 px-6 rounded-xl transition duration-200 shadow hover:shadow-md">
-            <span className="text-lg">📷 Seleccionar y Subir 🎥</span>
+            <span className="text-lg">📷 Sube una Foto o Video 🎥</span>
             <input
               type="file"
               accept="image/*,video/*"
