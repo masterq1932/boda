@@ -13,13 +13,15 @@ const s3Client = new S3Client({
 
 export async function POST(request) {
   try {
-    const { filename, fileType } = await request.json();
+    const { filename, fileType, comment } = await request.json();
 
     if (!filename || !fileType) {
       return NextResponse.json({ error: 'Faltan parámetros' }, { status: 400 });
     }
 
-    const uniqueKey = `boda-${Date.now()}-${filename.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    const cleanComment = comment ? Buffer.from(comment).toString('base64url') : 'nocomment';
+    const cleanFilename = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const uniqueKey = `boda-${Date.now()}-${cleanComment}-${cleanFilename}`;
 
     const command = new PutObjectCommand({
       Bucket: process.env.R2_BUCKET_NAME,
